@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:L1"
+             xmlns:graphicApp="clr-namespace:GraphicApp"
              x:DataType="viewmodel:ViewModel"
              x:Class="L1.MainPage">
 
@@ -35,10 +36,21 @@
         </ScrollView>
 
         <!-- Правая область (холст для рисования) -->
-        <ScrollView Grid.Column="1">
+        <ScrollView Grid.Column="1"
+                    x:Name="CanvasScroll"
+                    Orientation="Both"
+                    HorizontalScrollBarVisibility="Always"
+                    VerticalScrollBarVisibility="Always">
+
+            <!-- ← здесь, внутри ScrollView, подвешиваем поведение -->
+            <ScrollView.Behaviors>
+                <graphicApp:BehaviorsClass />
+            </ScrollView.Behaviors>
+
+            <!-- Ваш холст -->
             <viewmodel:Graphics x:Name="CanvasControl"
-                                HeightRequest="1488"
                                 WidthRequest="3000"
+                                HeightRequest="1488"
                                 BackgroundColor="LightGray" />
         </ScrollView>
     </Grid>
