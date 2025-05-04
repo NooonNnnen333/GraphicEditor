@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace GraphicApp;
+namespace L1;
 
 public class Shape
 {
@@ -187,9 +187,4 @@ public partial class ViewModel : ObservableObject
     {
         _graphics.Scale(ScaleX, ScaleY);
     }
-    
-    double _startX, _startY;
-
-    
-
 }

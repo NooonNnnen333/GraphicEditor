@@ -1,12 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:behaviors="clr-namespace:GraphicApp"
-             xmlns:viewmodel="clr-namespace:GraphicApp"
-             xmlns:controls="clr-namespace:ColorPicker;assembly=Maui.ColorPicker"
-             xmlns:maui="https://trungnt2910.github.io/schemas/maui/2022/colorpicker"
+             xmlns:viewmodel="clr-namespace:L1"
              x:DataType="viewmodel:ViewModel"
-             x:Class="GraphicApp.MainPage">
+             x:Class="L1.MainPage">
 
     <Grid ColumnDefinitions="1*,3*">
         <!-- Левая область -->
@@ -35,29 +32,14 @@
                 <Entry Placeholder="kY" Text="{Binding ScaleY}" />
                 <Button Text="Масштабировать" Command="{Binding ScaleCommand}" />
             </VerticalStackLayout>
-            
-            <!-- Заливка -->
-            
-
-            
         </ScrollView>
 
         <!-- Правая область (холст для рисования) -->
-        <ScrollView Grid.Column="1"
-                    x:Name="CanvasScroll"
-                    Orientation="Both"
-                    HorizontalScrollBarVisibility="Always"
-                    VerticalScrollBarVisibility="Always">
-            <ScrollView.Behaviors>
-                <behaviors:BehaviorsClass />
-            </ScrollView.Behaviors>
-
-            <!-- Ваш холст -->
+        <ScrollView Grid.Column="1">
             <viewmodel:Graphics x:Name="CanvasControl"
-                                WidthRequest="3000"
                                 HeightRequest="1488"
+                                WidthRequest="3000"
                                 BackgroundColor="LightGray" />
         </ScrollView>
-        
     </Grid>
 </ContentPage>

@@ -1,4 +1,4 @@
-﻿namespace GraphicApp;
+﻿namespace L1;
 
 public partial class MainPage : ContentPage
 {
@@ -15,8 +15,6 @@ public partial class MainPage : ContentPage
         // Назначаем ViewModel в качестве BindingContext (если нужно биндинги)
         BindingContext = _viewModel;
     }
-    
-    
-    
+
+
 }
-    
