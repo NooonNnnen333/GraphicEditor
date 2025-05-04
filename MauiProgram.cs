@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using ColorPicker;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace GraphicApp;
 
@@ -11,6 +13,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseSkiaSharp()
             // Initialize the .NET MAUI Community Toolkit by adding the below line of code
             .UseMauiCommunityToolkit()
             // After initializing the .NET MAUI Community Toolkit, optionally add additional fonts

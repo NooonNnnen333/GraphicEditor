@@ -16,5 +16,7 @@ public partial class MainPage : ContentPage
         BindingContext = _viewModel;
     }
     
+    
+    
 }
     

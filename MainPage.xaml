@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:GraphicApp"
              xmlns:viewmodel="clr-namespace:GraphicApp"
+             xmlns:controls="clr-namespace:ColorPicker;assembly=Maui.ColorPicker"
+             xmlns:maui="https://trungnt2910.github.io/schemas/maui/2022/colorpicker"
              x:DataType="viewmodel:ViewModel"
              x:Class="GraphicApp.MainPage">
 
@@ -33,6 +35,11 @@
                 <Entry Placeholder="kY" Text="{Binding ScaleY}" />
                 <Button Text="Масштабировать" Command="{Binding ScaleCommand}" />
             </VerticalStackLayout>
+            
+            <!-- Заливка -->
+            
+
+            
         </ScrollView>
 
         <!-- Правая область (холст для рисования) -->
@@ -51,5 +58,6 @@
                                 HeightRequest="1488"
                                 BackgroundColor="LightGray" />
         </ScrollView>
+        
     </Grid>
 </ContentPage>
