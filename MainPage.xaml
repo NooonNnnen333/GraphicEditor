@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodel="clr-namespace:L1"
+             xmlns:behaviors="clr-namespace:GraphicApp"
+             xmlns:viewmodel="clr-namespace:GraphicApp"
              x:DataType="viewmodel:ViewModel"
-             x:Class="L1.MainPage">
+             x:Class="GraphicApp.MainPage">
 
     <Grid ColumnDefinitions="1*,3*">
         <!-- Левая область -->
@@ -35,10 +36,19 @@
         </ScrollView>
 
         <!-- Правая область (холст для рисования) -->
-        <ScrollView Grid.Column="1">
+        <ScrollView Grid.Column="1"
+                    x:Name="CanvasScroll"
+                    Orientation="Both"
+                    HorizontalScrollBarVisibility="Always"
+                    VerticalScrollBarVisibility="Always">
+            <ScrollView.Behaviors>
+                <behaviors:BehaviorsClass />
+            </ScrollView.Behaviors>
+
+            <!-- Ваш холст -->
             <viewmodel:Graphics x:Name="CanvasControl"
-                                HeightRequest="1488"
                                 WidthRequest="3000"
+                                HeightRequest="1488"
                                 BackgroundColor="LightGray" />
         </ScrollView>
     </Grid>

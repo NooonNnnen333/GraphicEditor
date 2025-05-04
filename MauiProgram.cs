@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace L1;
+namespace GraphicApp;
 
 using CommunityToolkit.Maui;
 
