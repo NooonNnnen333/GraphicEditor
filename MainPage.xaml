@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:L1"
+             x:DataType="viewmodel:ViewModel"
+             x:Class="L1.MainPage">
+
+    <Grid ColumnDefinitions="1*,3*">
+        <!-- Левая область -->
+        <ScrollView Grid.Column="0">
+            <VerticalStackLayout Padding="20" Spacing="20">
+                <!-- Ввод координат для трапеции -->
+                <Label Text="Координаты трапеции:" />
+                <Entry Placeholder="Введите X..." Text="{Binding X}" />
+                <Entry Placeholder="Введите Y..." Text="{Binding Y}" />
+                <Button Text="Создать трапецию" Command="{Binding CreateTrapezoidCommand}" />
+
+                <!-- Параллельный перенос -->
+                <Label Text="Параллельный перенос:" />
+                <Entry Placeholder="Смещение по X" Text="{Binding TranslateX}" />
+                <Entry Placeholder="Смещение по Y" Text="{Binding TranslateY}" />
+                <Button Text="Перенести" Command="{Binding TranslateCommand}" />
+
+                <!-- Вращение -->
+                <Label Text="Поворот (градусы):" />
+                <Entry Placeholder="Угол" Text="{Binding RotationAngle}" />
+                <Button Text="Повернуть" Command="{Binding RotateCommand}" />
+
+                <!-- Масштабирование -->
+                <Label Text="Масштабирование:" />
+                <Entry Placeholder="kX" Text="{Binding ScaleX}" />
+                <Entry Placeholder="kY" Text="{Binding ScaleY}" />
+                <Button Text="Масштабировать" Command="{Binding ScaleCommand}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Правая область (холст для рисования) -->
+        <ScrollView Grid.Column="1">
+            <viewmodel:Graphics x:Name="CanvasControl"
+                                HeightRequest="1488"
+                                WidthRequest="3000"
+                                BackgroundColor="LightGray" />
+        </ScrollView>
+    </Grid>
+</ContentPage>
