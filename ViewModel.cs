@@ -6,7 +6,7 @@ namespace GraphicApp;
 public class Shape
 {
     // Координаты вершин трапеции:
-    // Верхняя левая
+    // Верхняя левая новая версия
     public int XLV { get; set; }
     public int YVL { get; set; }
     // Верхняя правая
