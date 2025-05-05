@@ -1,4 +1,4 @@
-﻿namespace L1;
+﻿namespace GraphicApp;
 
 public partial class MainPage : ContentPage
 {

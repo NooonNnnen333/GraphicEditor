@@ -1,6 +1,5 @@
 ﻿using Foundation;
 using GraphicApp;
-using L1;
 
 namespace GraphicApp;
 
