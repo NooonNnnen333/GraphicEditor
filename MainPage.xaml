@@ -32,8 +32,24 @@
                 <Entry Placeholder="kX" Text="{Binding ScaleX}" />
                 <Entry Placeholder="kY" Text="{Binding ScaleY}" />
                 <Button Text="Масштабировать" Command="{Binding ScaleCommand}" />
+        
+                <!-- Цвет -->
+                <Button Text="Поменять" Command="{Binding CvetCommand}"/>
+                
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Frame Padding="4" Margin="0,4">
+                            <Label Text="{Binding .}" FontSize="19"/>
+                        </Frame>
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+                
             </VerticalStackLayout>
         </ScrollView>
+        
+            
+        
 
         <!-- Правая область (холст для рисования) -->
         <ScrollView Grid.Column="1"
@@ -51,7 +67,10 @@
             <graphicApp:Graphics x:Name="CanvasControl"
                                 WidthRequest="3000"
                                 HeightRequest="1488"
-                                BackgroundColor="LightGray" />
+                                BackgroundColor="LightGray" 
+                                StartInteraction="OnCanvasStart"
+                                DragInteraction="OnCanvasDrag"
+                                EndInteraction="OnCanvasEnd" />
         </ScrollView>
     </Grid>
 </ContentPage>
