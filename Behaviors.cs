@@ -28,5 +28,7 @@ public class BehaviorsClass : Behavior<ScrollView>
         };
 
         scroll.GestureRecognizers.Add(pan);
+        
     }
+    
 }

@@ -2,7 +2,7 @@ namespace GraphicApp;
 
 
 
-public class Shape
+public class Rectangle
 {
     public int ID;
     public ICanvas canvas;
@@ -15,7 +15,7 @@ public class Shape
     
 public class Graphics : GraphicsView, IDrawable
 {
-    public List<Shape> ShapesE { get; } = new(); // Список трапеций для отрисовки
+    public List<Rectangle> ShapesE { get; } = new(); // Список трапеций для отрисовки
     
     public ICanvas? canvasSvoistvo; // Оперделяем свойство для хранения и измененя цвета
     public Color сolorStroke { get; private set; }
@@ -31,12 +31,16 @@ public class Graphics : GraphicsView, IDrawable
         canvasSvoistvo = null;
         сolorStroke = Colors.Blue;
         
-        StartInteraction += OnTouchStarted;
-        DragInteraction += OnTouchMoved;
+        StartInteraction += (sender, args) => ClickedOnCanvas?.Invoke(sender, args);
 
     }
+    /* Делегат и триггер для передачи области во viewmodel */
+    public delegate void CanvasInspectionHeandler(object? sender, TouchEventArgs eventArgs); // Делегат для принятия нажатия
 
-    public void Cvet() // Изменение цвета
+    public event CanvasInspectionHeandler? ClickedOnCanvas;
+    
+    /* Изменение цвета */
+    public void Cvet() 
     {
         сolorStroke = Colors.Aqua; // или любой другой цвет
         Invalidate();
@@ -67,7 +71,7 @@ public class Graphics : GraphicsView, IDrawable
     }
 
     // Метод добавления трапеции
-    public void AddShape(Shape s)
+    public void AddShape(Rectangle s)
     {
         ShapesE.Add(s);
         Invalidate();
@@ -152,77 +156,7 @@ public class Graphics : GraphicsView, IDrawable
         Invalidate();
     }
     
-//======================================================================================================================    
 
-    private PointF? _firstPoint;
-
-    private void OnTouchStarted(object? sender, TouchEventArgs e)
-    {
-        var p = e.Touches[0]; // всегда первая точка
-
-        if (_firstPoint is null)
-        {
-            // первый клик — запоминаем
-            _firstPoint = p;
-        }
-        else
-        {
-            // второй клик — строим по двум точкам новую фигуру
-            var second = p;
-            var shape = new Shape
-            {
-                XLV = (int)_firstPoint.Value.X,
-                YVL = (int)_firstPoint.Value.Y,
-                XRV = (int)second.X,
-                YVR = (int)second.Y,
-                // остальные вершины можно жестко задать или вычислить...
-                XRN = (int)second.X,
-                YNR = (int)second.Y + 50,
-                XLN = (int)_firstPoint.Value.X,
-                YNL = (int)_firstPoint.Value.Y + 50,
-            };
-            AddShape(shape);
-
-            // сбрасываем для новой пары кликов
-            _firstPoint = null;
-        }
-    }
-    private void OnTouchMoved(object? sender, TouchEventArgs e)
-    {
-        var p = e.Touches[0]; // всегда первая точка
-
-        if (_firstPoint is null)
-        {
-            // первый клик — запоминаем
-            _firstPoint = p;
-        }
-        else
-        {
-            // второй клик — строим по двум точкам новую фигуру
-            var second = p;
-            var shape = new Shape
-            {
-                XLV = (int)_firstPoint.Value.X,
-                YVL = (int)_firstPoint.Value.Y,
-                XRV = (int)second.X,
-                YVR = (int)second.Y,
-                // остальные вершины можно жестко задать или вычислить...
-                XRN = (int)second.X,
-                YNR = (int)second.Y + 50,
-                XLN = (int)_firstPoint.Value.X,
-                YNL = (int)_firstPoint.Value.Y + 50,
-            };
-            AddShape(shape);
-
-            // сбрасываем для новой пары кликов
-            _firstPoint = null;
-        }
-    }
-
-    private void OnTouchEnded(object? sender, TouchEventArgs e)
-    {
-        // опциональная логика по отпусканию
-    }
+    
 }
-
 
