@@ -6,7 +6,7 @@
              x:DataType="viewmodel:ViewModel"
              x:Class="GraphicApp.MainPage">
     
-    <Grid ColumnDefinitions="1*,3*">
+    <Grid ColumnDefinitions="0.5*,3*">
         <!-- Левая область -->
         <ScrollView Grid.Column="0">
             <VerticalStackLayout Padding="20" Spacing="20">
@@ -14,7 +14,10 @@
                 <Label Text="Координаты трапеции:" />
                 <Entry Placeholder="Введите X..." Text="{Binding X}" />
                 <Entry Placeholder="Введите Y..." Text="{Binding Y}" />
-                <Button Text="Создать трапецию" Command="{Binding CreateFigureCommand}" />
+                <Button Text="Создать трапецию" Command="{Binding CreateFigureCommand}" 
+                        HeightRequest="35"
+                        WidthRequest="35"
+                        />
 
                 <!-- Параллельный перенос -->
                 <Label Text="Параллельный перенос:" />
@@ -36,9 +39,9 @@
                 <!-- Цвет -->
                 <Button Text="Поменять" Command="{Binding CvetCommand}"/>
                 
-                <CollectionView ItemsSource = "{Binding Rectangles}" HeightRequest="155">
+                <CollectionView ItemsSource = "{Binding Figures}" HeightRequest="155">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="graphicApp:Rectangle">
+                        <DataTemplate x:DataType="graphicApp:Figure">
                             <Frame Padding="5" Margin="0,3">
                                 <Label Text="{Binding name}" FontSize="19"/>
                             </Frame>

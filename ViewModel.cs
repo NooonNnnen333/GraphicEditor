@@ -11,7 +11,7 @@ public partial class ViewModel : ObservableObject
     private int _id; // Id фигуры, к которую мы создаём, для реализации работы со слоями
 
     [ObservableProperty] 
-    public ObservableCollection<Figure> rectangles; // Папка для хранения созданных фигур
+    public ObservableCollection<Figure> figures; // Папка для хранения созданных фигур
     
 //======================================================================================================================    
     
@@ -42,22 +42,19 @@ public partial class ViewModel : ObservableObject
     public void CreateFigure()
     {
         var shape = new Rectangle(
-            X + 30,         // XLV
-            Y,              // YLV
-            X + 80,         // XRV
-            Y,              // YRV
-            X + 110,        // XRN
-            Y + 55,         // YNR
-            X,              // XLN
-            Y + 55,          // YLN
-            _id ++
-        )
-        {
-            id = _id++
-            // Если нужны еще параметры, добавь здесь
-        };
+            X + 30, // XLV
+            Y, // YLV
+            X + 80, // XRV
+            Y, // YRV
+            X + 110, // XRN
+            Y + 55, // YNR
+            X, // XLN
+            Y + 55, // YLN
+            _id++
+        );
+
         _graphics.AddShape(shape);
-        Rectangles = new ObservableCollection<Figure>(_graphics.ShapesE);
+        Figures = new ObservableCollection<Figure>(_graphics.ShapesE);
     }
 
     // Параллельный перенос
@@ -98,35 +95,34 @@ public partial class ViewModel : ObservableObject
         if (_firstPoint is null)
         {
             // первый клик — запоминаем
-            _firstPoint = p;
+            _firstPoint = new PointF(Convert.ToInt32(p.X), Convert.ToInt32(p.Y));
         }
         else
         {
             // второй клик — строим по двум точкам новую фигуру
             var second = p;
             var shape = new Rectangle(
-                (int)_firstPoint.Value.X,    
-                (int)_firstPoint.Value.Y,    
+                (int)_firstPoint.X,
+                (int)_firstPoint.Y,
 //----------------------------------------------------------------------------------------------------------------------
-                (int)second.X,               
-                (int)_firstPoint.Value.Y,    
+                (int)second.X,
+                (int)_firstPoint.Y,
 //----------------------------------------------------------------------------------------------------------------------
-                (int)second.X,               
-                (int)second.Y,               
+                (int)second.X,
+                (int)second.Y,
 //----------------------------------------------------------------------------------------------------------------------
-                (int)_firstPoint.Value.X,    
+                (int)_firstPoint.X,
                 (int)second.Y,
                 _id++
-            )
-            {
-                id = _id++ // 
-                // если нужно — добавляй параметры тут
-            };
+            );
+            
+            // если нужно — добавляй параметры тут
             _graphics.AddShape(shape); 
 
             // сбрасываем для новой пары кликов
             _firstPoint = null;
-            Rectangles = new ObservableCollection<Figure>(_graphics.ShapesE);
+            
+            Figures = new ObservableCollection<Figure>(_graphics.ShapesE);
         }
     }
     
