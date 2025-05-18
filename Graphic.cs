@@ -2,34 +2,17 @@ namespace GraphicApp;
 
 
 
-public class Rectangle
-{
-    public int ID;
-    public ICanvas canvas;
-    public int XLV, YVL, XRV, YVR, XRN, YNR, XLN, YNL;     
-}
-
-
 
 
     
 public class Graphics : GraphicsView, IDrawable
 {
-    public List<Rectangle> ShapesE { get; } = new(); // Список трапеций для отрисовки
-    
-    public ICanvas? canvasSvoistvo; // Оперделяем свойство для хранения и измененя цвета
-    public Color сolorStroke { get; private set; }
-    
-    
-
-    
+    public List<Figure> ShapesE { get; } = new(); // Список трапеций для отрисовки
     
 //======================================================================================================================    
     public Graphics() // Конструктор
     {
         Drawable = this;
-        canvasSvoistvo = null;
-        сolorStroke = Colors.Blue;
         
         StartInteraction += (sender, args) => ClickedOnCanvas?.Invoke(sender, args);
 
@@ -42,31 +25,50 @@ public class Graphics : GraphicsView, IDrawable
     /* Изменение цвета */
     public void Cvet() 
     {
-        сolorStroke = Colors.Aqua; // или любой другой цвет
         Invalidate();
     }
 
     
     public void Draw(ICanvas canvas, RectF dirtyRect) // Встроенный метод для отрисовки
     {
-        canvasSvoistvo = canvas;
-        canvasSvoistvo.StrokeColor = сolorStroke;
-        canvasSvoistvo.StrokeSize = 5;
+
+        canvas.StrokeColor = Colors.Blue;
+        canvas.StrokeSize = 5;
         DrawFigure(canvas);
+        
+
+        
     }
 
     public void DrawFigure(ICanvas canvas) 
     {
         
-        foreach (var shape in ShapesE)
+        foreach (Figure shape in ShapesE)
         {
-            var path = new PathF();
-            path.MoveTo(shape.XLV, shape.YVL);         // Верхняя левая
-            path.LineTo(shape.XRV, shape.YVR);          // Верхняя правая
-            path.LineTo(shape.XRN, shape.YNR);          // Нижняя правая
-            path.LineTo(shape.XLN, shape.YNL);          // Нижняя левая
+            var path = new PathF(); // Создаём новый линию фигуры
+            var values = shape.coordinates.Values.ToList(); // Список из ключей словаря координат фигуры 
+            
+            /* Перебор точек и соединение их линиями */
+            path.MoveTo(values[0], values[1]);
+            for (int i = 2; i < values.Count-1; i += 2)
+            {
+                path.LineTo(values[i], values[i + 1]);
+            }
+            
             path.Close();
             canvas.DrawPath(path);
+            
+            /* Предыдущая версия
+             foreach (var shape in ShapesE)
+               {
+                   var path = new PathF();
+                   path.MoveTo(shape.XLV, shape.YVL);         
+                   path.LineTo(shape.XRV, shape.YVR);         
+                   path.LineTo(shape.XRN, shape.YNR);         
+                   path.LineTo(shape.XLN, shape.YNL);         
+                   path.Close();
+                   canvas.DrawPath(path);
+               }*/
         }
     }
 
@@ -80,16 +82,16 @@ public class Graphics : GraphicsView, IDrawable
     // Параллельный перенос: смещает каждую вершину на dx по X и dy по Y
     public void Translate(double dx, double dy)
     {
+        // Ключи для X и Y координат
+        var xKeys = new[] { "XLV", "XRV", "XRN", "XLN" };
+        var yKeys = new[] { "YLV", "YVR", "YNR", "YLN" };
+
         foreach (var shape in ShapesE)
         {
-            shape.XLV += (int)dx;
-            shape.YVL += (int)dy;
-            shape.XRV += (int)dx;
-            shape.YVR += (int)dy;
-            shape.XRN += (int)dx;
-            shape.YNR += (int)dy;
-            shape.XLN += (int)dx;
-            shape.YNL += (int)dy;
+            foreach (var key in xKeys)
+                shape.coordinates[key] += (int)dx;
+            foreach (var key in yKeys)
+                shape.coordinates[key] += (int)dy;
         }
         Invalidate();
     }
@@ -105,33 +107,27 @@ public class Graphics : GraphicsView, IDrawable
 
         foreach (var shape in ShapesE)
         {
-            // Вычисляем центр трапеции
-            double centerX = (shape.XLV + shape.XRV + shape.XRN + shape.XLN) / 4.0;
-            double centerY = (shape.YVL + shape.YVR + shape.YNR + shape.YNL) / 4.0;
+            // Собираем текущие координаты в массивы
+            var Xs = new[] { shape.coordinates["XLV"], shape.coordinates["XRV"], shape.coordinates["XRN"], shape.coordinates["XLN"] };
+            var Ys = new[] { shape.coordinates["YLV"], shape.coordinates["YVR"], shape.coordinates["YNR"], shape.coordinates["YLN"] };
 
-            // Верхняя левая вершина
-            double newXLV = centerX + ((shape.XLV - centerX) * cos - (shape.YVL - centerY) * sin);
-            double newYVL = centerY + ((shape.XLV - centerX) * sin + (shape.YVL - centerY) * cos);
-            shape.XLV = (int)newXLV;
-            shape.YVL = (int)newYVL;
+            // Центр фигуры
+            double centerX = Xs.Average();
+            double centerY = Ys.Average();
 
-            // Верхняя правая вершина
-            double newXRV = centerX + ((shape.XRV - centerX) * cos - (shape.YVR - centerY) * sin);
-            double newYVR = centerY + ((shape.XRV - centerX) * sin + (shape.YVR - centerY) * cos);
-            shape.XRV = (int)newXRV;
-            shape.YVR = (int)newYVR;
+            // Ключи в том же порядке
+            string[] keysX = { "XLV", "XRV", "XRN", "XLN" };
+            string[] keysY = { "YLV", "YVR", "YNR", "YLN" };
 
-            // Нижняя правая вершина
-            double newXRN = centerX + ((shape.XRN - centerX) * cos - (shape.YNR - centerY) * sin);
-            double newYNR = centerY + ((shape.XRN - centerX) * sin + (shape.YNR - centerY) * cos);
-            shape.XRN = (int)newXRN;
-            shape.YNR = (int)newYNR;
-
-            // Нижняя левая вершина
-            double newXLN = centerX + ((shape.XLN - centerX) * cos - (shape.YNL - centerY) * sin);
-            double newYNL = centerY + ((shape.XLN - centerX) * sin + (shape.YNL - centerY) * cos);
-            shape.XLN = (int)newXLN;
-            shape.YNL = (int)newYNL;
+            for (int i = 0; i < 4; i++)
+            {
+                double x = Xs[i] - centerX;
+                double y = Ys[i] - centerY;
+                int newX = (int)(centerX + (x * cos - y * sin));
+                int newY = (int)(centerY + (x * sin + y * cos));
+                shape.coordinates[keysX[i]] = newX;
+                shape.coordinates[keysY[i]] = newY;
+            }
         }
         Invalidate();
     }
@@ -141,17 +137,24 @@ public class Graphics : GraphicsView, IDrawable
     {
         foreach (var shape in ShapesE)
         {
-            shape.XLV = (int)(shape.XLV * scaleX);
-            shape.YVL = (int)(shape.YVL * scaleY);
-            
-            shape.XRV = (int)(shape.XRV * scaleX);
-            shape.YVR = (int)(shape.YVR * scaleY);
-            
-            shape.XRN = (int)(shape.XRN * scaleX);
-            shape.YNR = (int)(shape.YNR * scaleY);
-            
-            shape.XLN = (int)(shape.XLN * scaleX);
-            shape.YNL = (int)(shape.YNL * scaleY);
+            // Текущие координаты
+            var Xs = new[] { shape.coordinates["XLV"], shape.coordinates["XRV"], shape.coordinates["XRN"], shape.coordinates["XLN"] };
+            var Ys = new[] { shape.coordinates["YLV"], shape.coordinates["YVR"], shape.coordinates["YNR"], shape.coordinates["YLN"] };
+
+            // Центр фигуры
+            double centerX = Xs.Average();
+            double centerY = Ys.Average();
+
+            string[] keysX = { "XLV", "XRV", "XRN", "XLN" };
+            string[] keysY = { "YLV", "YVR", "YNR", "YLN" };
+
+            for (int i = 0; i < 4; i++)
+            {
+                double dx = Xs[i] - centerX;
+                double dy = Ys[i] - centerY;
+                shape.coordinates[keysX[i]] = (int)(centerX + dx * scaleX);
+                shape.coordinates[keysY[i]] = (int)(centerY + dy * scaleY);
+            }
         }
         Invalidate();
     }
@@ -159,4 +162,3 @@ public class Graphics : GraphicsView, IDrawable
 
     
 }
-

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Graphics.Platform;
@@ -8,6 +9,9 @@ public partial class ViewModel : ObservableObject
 {
     private readonly Graphics _graphics;
     private int _id; // Id фигуры, к которую мы создаём, для реализации работы со слоями
+
+    [ObservableProperty] 
+    public ObservableCollection<Figure> rectangles; // Папка для хранения созданных фигур
     
 //======================================================================================================================    
     
@@ -28,20 +32,32 @@ public partial class ViewModel : ObservableObject
 
     public ViewModel(Graphics graphics)
     {
-        _graphics = graphics;
-        _id = 0;
-        _graphics.ClickedOnCanvas += OnTouchStarted;
+        _graphics = graphics; // Для взаимодействия с классом "Graphics" (а значит и с холстом)
+        _id = 0; // Изначально номер фигуры - 0
+        _graphics.ClickedOnCanvas += OnTouchStarted; // Для взаимодействие через мышь / палец (если на мобильном устройстве) с холстом
     }
 
     // Создание трапеции в точке (X, Y)
     [RelayCommand]
-    public void CreateTrapezoid()
+    public void CreateFigure()
     {
-        _graphics.AddShape(new Rectangle
+        var shape = new Rectangle(
+            X + 30,         // XLV
+            Y,              // YLV
+            X + 80,         // XRV
+            Y,              // YRV
+            X + 110,        // XRN
+            Y + 55,         // YNR
+            X,              // XLN
+            Y + 55,          // YLN
+            _id ++
+        )
         {
-            XLV = X + 30, YVL = Y, XRV = X + 80, YVR = Y, XLN = X, YNL = Y + 55, XRN = X + 110, YNR = Y + 55,
-            canvas = _graphics.canvasSvoistvo, ID = _id++
-        });
+            id = _id++
+            // Если нужны еще параметры, добавь здесь
+        };
+        _graphics.AddShape(shape);
+        Rectangles = new ObservableCollection<Figure>(_graphics.ShapesE);
     }
 
     // Параллельный перенос
@@ -88,26 +104,29 @@ public partial class ViewModel : ObservableObject
         {
             // второй клик — строим по двум точкам новую фигуру
             var second = p;
-            var shape = new Rectangle
+            var shape = new Rectangle(
+                (int)_firstPoint.Value.X,    
+                (int)_firstPoint.Value.Y,    
+//----------------------------------------------------------------------------------------------------------------------
+                (int)second.X,               
+                (int)_firstPoint.Value.Y,    
+//----------------------------------------------------------------------------------------------------------------------
+                (int)second.X,               
+                (int)second.Y,               
+//----------------------------------------------------------------------------------------------------------------------
+                (int)_firstPoint.Value.X,    
+                (int)second.Y,
+                _id++
+            )
             {
-                XLV = (int)_firstPoint.Value.X,
-                YVL = (int)_firstPoint.Value.Y,
-//--------------------------------------------------
-                XRN = (int)second.X,
-                YNR = (int)second.Y,
-//--------------------------------------------------                
-                XRV = (int)second.X,
-                YVR = (int)_firstPoint.Value.Y,
-//--------------------------------------------------                
-                XLN = (int)_firstPoint.Value.X,
-                YNL = (int)second.Y,
-//--------------------------------------------------                
-                ID = _id++
+                id = _id++ // 
+                // если нужно — добавляй параметры тут
             };
             _graphics.AddShape(shape); 
 
             // сбрасываем для новой пары кликов
             _firstPoint = null;
+            Rectangles = new ObservableCollection<Figure>(_graphics.ShapesE);
         }
     }
     
