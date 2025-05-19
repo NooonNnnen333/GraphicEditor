@@ -5,15 +5,17 @@ namespace GraphicApp;
 
 
     
-public class Graphics : GraphicsView, IDrawable
+public partial class Graphics : GraphicsView, IDrawable
 {
     public List<Figure> ShapesE { get; } = new(); // Список трапеций для отрисовки
+
+    public short mode; // Режим для класс draw
     
 //======================================================================================================================    
     public Graphics() // Конструктор
     {
         Drawable = this;
-        
+        mode = 0;
         StartInteraction += (sender, args) => ClickedOnCanvas?.Invoke(sender, args);
 
     }
@@ -23,21 +25,31 @@ public class Graphics : GraphicsView, IDrawable
     public event CanvasInspectionHeandler? ClickedOnCanvas;
     
     /* Изменение цвета */
-    public void Cvet() 
+    public void Cvet()
     {
+        ShapesE[ShapesE.Count-1].fillColor = Colors.Blue;
         Invalidate();
     }
 
+//----------------------------------------------------------------------------------------------------------------------    
     
     public void Draw(ICanvas canvas, RectF dirtyRect) // Встроенный метод для отрисовки
     {
 
-        canvas.StrokeColor = Colors.Blue;
-        canvas.StrokeSize = 5;
-        DrawFigure(canvas);
-        
+        switch (mode)
+        {
+            case 0: // 
+                canvas.StrokeColor = Colors.Blue;
+                canvas.StrokeSize = 5;
+                DrawFigure(canvas);
+                break;
+            case 1:
+                FillDraw(canvas, ShapesE[ShapesE.Count-1]);
+                break;
+            
+        }
 
-        
+         
     }
 
     public void DrawFigure(ICanvas canvas) 
@@ -55,12 +67,31 @@ public class Graphics : GraphicsView, IDrawable
                 path.LineTo(values[i].X, values[i].Y);
             }
             
-            path.Close();
-            canvas.DrawPath(path);
-            
+            path.Close(); // Закрываем контур фигуры
+            canvas.DrawPath(path); // Передаём контур на отрисовку
 
+            FillDraw(canvas, shape);
         }
+
+        mode = 0;
     }
+
+    private void FillDraw(ICanvas canvas, Figure figureFill)
+    {
+
+        if (figureFill.fillColor == null)
+        {
+            Console.WriteLine("Нет цвета");
+            return;
+        }
+        
+        SimpleScanlineFill(canvas, figureFill.coordinates,  figureFill.fillColor);
+        Console.WriteLine($"Id {figureFill.id}");
+        
+        mode = 0;
+    }
+    
+//----------------------------------------------------------------------------------------------------------------------    
 
     // Метод добавления фигуры
     public void AddShape(Rectangle s)
