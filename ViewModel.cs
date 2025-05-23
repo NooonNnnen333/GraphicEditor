@@ -37,6 +37,19 @@ public partial class ViewModel : ObservableObject
         _graphics.ClickedOnCanvas += OnTouchStarted; // Для взаимодействие через мышь / палец (если на мобильном устройстве) с холстом
     }
 
+    [RelayCommand]
+    public void Change3()
+    {
+        _graphics.mode = 3;
+    }
+    
+    [RelayCommand]
+    public void Change0()
+    {
+        _graphics.mode = 0;
+    }
+
+    
     // Создание трапеции в точке (X, Y)
     [RelayCommand]
     public void CreateFigure()
@@ -86,45 +99,34 @@ public partial class ViewModel : ObservableObject
 
 //======================================================================================================================    
 
-    private PointF? _firstPoint;
 
     private void OnTouchStarted(object? sender, TouchEventArgs eventArgs)
     {
+        
         var p = eventArgs.Touches[0]; // всегда первая точка
-
-        if (_firstPoint is null)
-        {
-            // первый клик — запоминаем
-            _firstPoint = new PointF(Convert.ToInt32(p.X), Convert.ToInt32(p.Y));
-        }
-        else
-        {
-            // второй клик — строим по двум точкам новую фигуру
-            var second = p;
-            var shape = new Rectangle(
-                (int)_firstPoint.X,
-                (int)_firstPoint.Y,
-//----------------------------------------------------------------------------------------------------------------------
-                (int)second.X,
-                (int)_firstPoint.Y,
-//----------------------------------------------------------------------------------------------------------------------
-                (int)second.X,
-                (int)second.Y,
-//----------------------------------------------------------------------------------------------------------------------
-                (int)_firstPoint.X,
-                (int)second.Y,
-                _id++
-            );
+        PointF point = new PointF(Convert.ToInt32(p.X), Convert.ToInt32(p.Y));
             
-            // если нужно — добавляй параметры тут
-            _graphics.AddShape(shape); 
+            switch (_graphics.mode)
+            {
+                case 0:
+                    if (_graphics.CreateRectangleWithTouch(point, _id))
+                    {
+                        _id++; // Обновляем (увеличиваем id) фигуры
+                    }
+                    break;
+                
+                case 3:
+                    if (_graphics.CreateSpline(point, _id))
+                    {
+                        _id++; // Обновляем (увеличиваем id) фигуры
+                    }
 
-            // сбрасываем для новой пары кликов
-            _firstPoint = null;
+                    break;
+                
+            }
             
             Figures = new ObservableCollection<Figure>(_graphics.ShapesE);
-        }
-    }
-    
-    
+        } 
 }
+    
+    

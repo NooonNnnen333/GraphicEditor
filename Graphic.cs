@@ -4,76 +4,87 @@ namespace GraphicApp;
 
 
 
-    
+
 public partial class Graphics : GraphicsView, IDrawable
 {
     public List<Figure> ShapesE { get; } = new(); // Список трапеций для отрисовки
+    public List<PointF> ControlPoints;
 
-    public short mode; // Режим для класс draw
-    
-//======================================================================================================================    
+    public short? mode; // Режим для класс draw
+
+//======================================================================================================================
     public Graphics() // Конструктор
     {
         Drawable = this;
-        mode = 0;
         StartInteraction += (sender, args) => ClickedOnCanvas?.Invoke(sender, args);
+        Console.WriteLine("Возобновление");
+        flag = false;
 
     }
+
     /* Делегат и триггер для передачи области во viewmodel */
-    public delegate void CanvasInspectionHeandler(object? sender, TouchEventArgs eventArgs); // Делегат для принятия нажатия
+    public delegate void
+        CanvasInspectionHeandler(object? sender, TouchEventArgs eventArgs); // Делегат для принятия нажатия
 
     public event CanvasInspectionHeandler? ClickedOnCanvas;
-    
+
     /* Изменение цвета */
     public void Cvet()
     {
-        ShapesE[ShapesE.Count-1].fillColor = Colors.Blue;
+        ShapesE[ShapesE.Count - 1].fillColor = Colors.Blue;
         Invalidate();
     }
 
 //----------------------------------------------------------------------------------------------------------------------    
-    
+
     public void Draw(ICanvas canvas, RectF dirtyRect) // Встроенный метод для отрисовки
     {
 
         switch (mode)
         {
-            case 0: // 
+            case 0: // Создание прямоугольника
                 canvas.StrokeColor = Colors.Blue;
                 canvas.StrokeSize = 5;
                 DrawFigure(canvas);
                 break;
             case 1:
-                FillDraw(canvas, ShapesE[ShapesE.Count-1]);
+                FillDraw(canvas, ShapesE[ShapesE.Count - 1]);
                 break;
-            
+            case 3: // Создание сплайна 
+                canvas.StrokeColor = Colors.Blue;
+                canvas.StrokeSize = 5;
+                DrawFigure(canvas);
+                break;
+
         }
 
-         
+
     }
 
-    public void DrawFigure(ICanvas canvas) 
+    public void DrawFigure(ICanvas canvas)
     {
-        
+
         foreach (Figure shape in ShapesE)
         {
             var path = new PathF(); // Создаём новый линию фигуры
             var values = shape.coordinates; // Список из ключей словаря координат фигуры 
-            
+
             /* Перебор точек и соединение их линиями */
             path.MoveTo(values[0].X, values[0].Y);
-            for (int i = 1; i < values.Count; i ++)
-            {
+            for (int i = 1; i < values.Count; i++)
                 path.LineTo(values[i].X, values[i].Y);
-            }
-            
-            path.Close(); // Закрываем контур фигуры
-            canvas.DrawPath(path); // Передаём контур на отрисовку
 
-            FillDraw(canvas, shape);
+            // Закрываем и заливаем **только** не-сплайны
+            if (shape is not Spline)
+            {
+                path.Close();
+                FillDraw(canvas, shape);
+            }
+
+            canvas.DrawPath(path);
+
         }
 
-        mode = 0;
     }
 
     private void FillDraw(ICanvas canvas, Figure figureFill)
@@ -84,16 +95,105 @@ public partial class Graphics : GraphicsView, IDrawable
             Console.WriteLine("Нет цвета");
             return;
         }
-        
-        SimpleScanlineFill(canvas, figureFill.coordinates,  figureFill.fillColor);
+
+        SimpleScanlineFill(canvas, figureFill.coordinates, figureFill.fillColor);
         Console.WriteLine($"Id {figureFill.id}");
-        
+
         mode = 0;
     }
-    
+
+
+
+    // private void Spline(ICanvas canvas) 
+    // {
+    //     canvas.DrawPath();
+    // }
+
 //----------------------------------------------------------------------------------------------------------------------    
 
-    // Метод добавления фигуры
+    private PointF? firstPoint;
+
+    public bool CreateRectangleWithTouch(PointF p, int id)
+    {
+        //_controlPoints = null;
+
+        if (firstPoint is null)
+        {
+            // первый клик — запоминаем
+            firstPoint = p;
+            return false;
+        }
+        else
+        {
+            // второй клик — строим по двум точкам новую фигуру
+            PointF secondPoint = p;
+            var shape = new Rectangle(
+                (int)firstPoint.X,
+                (int)firstPoint.Y,
+//----------------------------------------------------------------------------------------------------------------------
+                (int)secondPoint.X,
+                (int)firstPoint.Y,
+//----------------------------------------------------------------------------------------------------------------------
+                (int)secondPoint.X,
+                (int)secondPoint.Y,
+//----------------------------------------------------------------------------------------------------------------------
+                (int)firstPoint.X,
+                (int)secondPoint.Y,
+                id
+            );
+            ShapesE.Add(shape);
+            firstPoint = null;
+            Invalidate();
+        }
+
+        return true;
+    }
+
+    private List<PointF>? _controlPoints;
+    private bool flag;
+    public bool CreateSpline(PointF p, int id)
+    {
+        if ((_controlPoints != null && ShapesE.Count > 0 && ShapesE[ShapesE.Count - 1] is Spline) || flag == true)
+            _controlPoints.Add(p);
+        else
+        {
+            _controlPoints = null;
+            _controlPoints ??= new List<PointF>();  // Создаём новый список
+            _controlPoints.Add(p);
+            flag = true;
+        }
+
+        // строим, только если точек ≥ 2
+        if (_controlPoints.Count >= 2)
+        {
+            if (ShapesE.Count > 0 && ShapesE[ShapesE.Count-1] is Spline oldSpline)
+            {
+                ShapesE[^1] = new Spline(_controlPoints, oldSpline.id);
+                Invalidate();
+                flag = false;
+
+                return false;
+            }
+
+            flag = false;
+            // первая готовая дуга
+            ShapesE.Add(new Spline(_controlPoints, id));
+            Console.WriteLine("новый");
+            Invalidate();
+            return true; // сразу увеличиваем Id
+
+
+        }
+
+        return false;
+    }
+
+
+
+
+
+
+// Метод добавления фигуры
     public void AddShape(Rectangle s)
     {
         ShapesE.Add(s);

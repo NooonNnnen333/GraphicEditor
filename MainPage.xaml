@@ -11,13 +11,9 @@
         <ScrollView Grid.Column="0">
             <VerticalStackLayout Padding="20" Spacing="20">
                 <!-- Ввод координат для трапеции -->
-                <Label Text="Координаты трапеции:" />
-                <Entry Placeholder="Введите X..." Text="{Binding X}" />
-                <Entry Placeholder="Введите Y..." Text="{Binding Y}" />
-                <Button Text="Создать трапецию" Command="{Binding CreateFigureCommand}" 
-                        HeightRequest="35"
-                        WidthRequest="35"
-                        />
+                <Button Text="Прямоугольник" Command="{Binding Change0Command}"/>
+                <!-- Смена режима -->
+                <Button Text="Сплайн" Command="{Binding Change3Command}"/>
 
                 <!-- Параллельный перенос -->
                 <Label Text="Параллельный перенос:" />
@@ -25,6 +21,9 @@
                 <Entry Placeholder="Смещение по Y" Text="{Binding TranslateY}" />
                 <Button Text="Перенести" Command="{Binding TranslateCommand}" />
 
+                <!-- Цвет -->
+                <Button Text="Поменять" Command="{Binding CvetCommand}"/>
+                
                 <!-- Вращение -->
                 <Label Text="Поворот (градусы):" />
                 <Entry Placeholder="Угол" Text="{Binding RotationAngle}" />
@@ -36,8 +35,6 @@
                 <Entry Placeholder="kY" Text="{Binding ScaleY}" />
                 <Button Text="Масштабировать" Command="{Binding ScaleCommand}" />
         
-                <!-- Цвет -->
-                <Button Text="Поменять" Command="{Binding CvetCommand}"/>
                 
                 <CollectionView ItemsSource = "{Binding Figures}" HeightRequest="155">
                     <CollectionView.ItemTemplate>
