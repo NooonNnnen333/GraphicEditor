@@ -2,7 +2,7 @@
 
 public partial class MainPage : ContentPage
 {
-    
+    private PointF? _firstPoint;
     public ViewModel _viewModel;
     
     public MainPage()
@@ -15,6 +15,7 @@ public partial class MainPage : ContentPage
         // Назначаем ViewModel в качестве BindingContext (если нужно биндинги)
         BindingContext = _viewModel;
     }
+
 
 
 }
