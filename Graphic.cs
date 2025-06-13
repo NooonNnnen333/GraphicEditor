@@ -19,6 +19,7 @@ public partial class Graphics : GraphicsView, IDrawable
         StartInteraction += (sender, args) => ClickedOnCanvas?.Invoke(sender, args);
         Console.WriteLine("Возобновление");
         flag = false;
+        mode = 0;
 
     }
 
@@ -39,7 +40,13 @@ public partial class Graphics : GraphicsView, IDrawable
 
     public void Draw(ICanvas canvas, RectF dirtyRect) // Встроенный метод для отрисовки
     {
+        /* 1. фон */
+        canvas.FillColor = Colors.LightGray;
+        canvas.FillRectangle(dirtyRect);
 
+        /* 2. нет фигура— больше нечего рисовать */
+        if (ShapesE.Count == 0) return;
+        
         switch (mode)
         {
             case 0: // Создание прямоугольника

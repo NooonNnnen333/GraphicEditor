@@ -54,7 +54,6 @@
 
         <!-- Правая область (холст для рисования) -->
         <ScrollView Grid.Column="1"
-                    x:Name="CanvasScroll"
                     Orientation="Both"
                     HorizontalScrollBarVisibility="Always"
                     VerticalScrollBarVisibility="Always">
@@ -67,8 +66,7 @@
             <!-- Ваш холст -->
             <graphicApp:Graphics x:Name="CanvasControl"
                                 WidthRequest="3000"
-                                HeightRequest="1488"
-                                BackgroundColor="LightGray"/>
+                                HeightRequest="1488"/>
         </ScrollView>
     </Grid>
 </ContentPage>
